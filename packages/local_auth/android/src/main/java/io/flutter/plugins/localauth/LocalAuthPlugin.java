@@ -190,7 +190,20 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
       return;
     }
 
-    // API 23 - 28 with fingerprint
+    if (!isBiometricOnly && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        && keyguardManager != null
+        && keyguardManager.isDeviceSecure()) {
+      String title = call.argument("signInTitle");
+      String reason = call.argument("localizedReason");
+      Intent authIntent = keyguardManager.createConfirmDeviceCredentialIntent(title, reason);
+
+      // save result for async response
+      lockRequestResult = result;
+      activity.startActivityForResult(authIntent, LOCK_REQUEST_CODE);
+      return;
+    }
+
+      // API 23 - 28 with fingerprint
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && fingerprintManager != null) {
       if (fingerprintManager.hasEnrolledFingerprints()) {
         authHelper =
