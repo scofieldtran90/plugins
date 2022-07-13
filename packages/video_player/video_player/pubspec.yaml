@@ -40,9 +40,9 @@ dependency_overrides:
     git:
       url: git@github.com:icapps/plugins.git
       path: packages/video_player/video_player_avfoundation
-      branch: feature/video_player_pip
+      ref: feature/video_player_pip
   video_player_platform_interface:
     git:
       url: git@github.com:icapps/plugins.git
       path: packages/video_player/video_player_platform_interface
-      branch: feature/video_player_pip
+      ref: feature/video_player_pip
