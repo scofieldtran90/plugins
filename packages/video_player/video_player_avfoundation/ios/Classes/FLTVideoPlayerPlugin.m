@@ -781,7 +781,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setPictureInPicture:(FLTPictureInPictureMessage*)input error:(FlutterError**)error {
-   FLTVideoPlayer* player = _players[input.textureId];
+   FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
      BOOL enabled = input.enabled;
      if (enabled) {
          [player usePlayerLayer: CGRectMake(input.left.floatValue, input.top.floatValue,
