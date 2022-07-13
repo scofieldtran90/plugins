@@ -6,6 +6,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
+#import <AVKit/AVKit.h>
 
 #import "AVAssetTrackUtils.h"
 #import "messages.g.h"
@@ -33,7 +34,7 @@
 }
 @end
 
-@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler, AVPictureInPictureControllerDelegate>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput *videoOutput;
 @property(readonly, nonatomic) CADisplayLink *displayLink;
@@ -44,6 +45,8 @@
 @property(nonatomic, readonly) BOOL isPlaying;
 @property(nonatomic) BOOL isLooping;
 @property(nonatomic, readonly) BOOL isInitialized;
+@property(nonatomic) AVPlayerLayer* _playerLayer;
+@property(nonatomic) bool _pictureInPicture;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
                 httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
@@ -56,6 +59,14 @@ static void *durationContext = &durationContext;
 static void *playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void *playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void *playbackBufferFullContext = &playbackBufferFullContext;
+
+static NSString *const readyForDisplayKeyPath = @"readyForDisplay";
+
+ #if TARGET_OS_IOS
+   void (^__strong _Nonnull _restoreUserInterfaceForPIPStopCompletionHandler)(BOOL);
+ API_AVAILABLE(ios(9.0))
+ AVPictureInPictureController *_pipController;
+ #endif
 
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
@@ -421,6 +432,151 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   _player.rate = speed;
 }
 
+- (void)setPictureInPicture:(BOOL)pictureInPicture
+ {
+     if (self._pictureInPicture == pictureInPicture) {
+         return;
+     }
+
+     self._pictureInPicture = pictureInPicture;
+     if (@available(iOS 9.0, *)) {
+         if (_pipController && self._pictureInPicture && ![_pipController isPictureInPictureActive]) {
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [_pipController startPictureInPicture];
+             });
+         } else if (_pipController && !self._pictureInPicture && [_pipController isPictureInPictureActive]) {
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [_pipController stopPictureInPicture];
+             });
+         } else {
+             // Fallback on earlier versions
+         } }
+ }
+
+ //- (void)usePlayerLayer
+ //{
+ //  if( _player )
+ //  {
+ //    _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+ //    _playerLayer.frame = self.bounds;
+ //    _playerLayer.needsDisplayOnBoundsChange = YES;
+ //
+ //    // to prevent video from being animated when resizeMode is 'cover'
+ //    // resize mode must be set before layer is added
+ //    [self setResizeMode:_resizeMode];
+ //    [_playerLayer addObserver:self forKeyPath:readyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
+ //    _playerLayerObserverSet = YES;
+ //
+ //    [self.layer addSublayer:_playerLayer];
+ //    self.layer.needsDisplayOnBoundsChange = YES;
+ //    #if TARGET_OS_IOS
+ //    [self setupPipController];
+ //    #endif
+ //  }
+ //}
+
+ #if TARGET_OS_IOS
+ - (void)setRestoreUserInterfaceForPIPStopCompletionHandler:(BOOL)restore
+ {
+   if (_restoreUserInterfaceForPIPStopCompletionHandler != NULL) {
+     _restoreUserInterfaceForPIPStopCompletionHandler(restore);
+     _restoreUserInterfaceForPIPStopCompletionHandler = NULL;
+   }
+ }
+
+ - (void)setupPipController {
+     if (@available(iOS 9.0, *)) {
+         if (!_pipController && self._playerLayer && [AVPictureInPictureController isPictureInPictureSupported]) {
+             _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self._playerLayer];
+             _pipController.delegate = self;
+         }
+     } else {
+         // Fallback on earlier versions
+     }
+ }
+
+ - (void)usePlayerLayer: (CGRect) frame
+ {
+     if( _player )
+     {
+         // Create new controller passing reference to the AVPlayerLayer
+         self._playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
+         UIViewController* vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+         //self._playerLayer.frame = CGRectMake(0, 0, 250, 200);
+         //self._playerLayer.frame = _player.accessibilityFrame;
+         self._playerLayer.frame = frame;
+         self._playerLayer.needsDisplayOnBoundsChange = YES;
+         //            [self._playerLayer addObserver:self forKeyPath:readyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
+         [vc.view.layer addSublayer:self._playerLayer];
+         vc.view.layer.needsDisplayOnBoundsChange = YES;
+         [self setupPipController];
+         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
+                        dispatch_get_main_queue(), ^{
+             [self setPictureInPicture:true];
+                        });
+
+
+     }
+ }
+
+ - (void)removePlayerLayer
+ {
+ //  if (_loadingRequest != nil) {
+ //    [_loadingRequest finishLoading];
+ //  }
+ //  _requestingCertificate = NO;
+ //  _requestingCertificateErrored = NO;
+   [self._playerLayer removeFromSuperlayer];
+ //  if (_playerLayerObserverSet) {
+ //    [self._playerLayer removeObserver:self forKeyPath:readyForDisplayKeyPath];
+ //    _playerLayerObserverSet = NO;
+ //  }
+     self._playerLayer = nil;
+     self._pictureInPicture = false;
+ }
+ #endif
+
+ #if TARGET_OS_IOS
+ - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+     [self removePlayerLayer];
+ //  if (self.onPictureInPictureStatusChanged) {
+ //    self.onPictureInPictureStatusChanged(@{
+ //                                           @"isActive": [NSNumber numberWithBool:false]
+ //                                           });
+ //  }
+ }
+
+ - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+ //  if (self.onPictureInPictureStatusChanged) {
+ //    self.onPictureInPictureStatusChanged(@{
+ //                                           @"isActive": [NSNumber numberWithBool:true]
+ //                                           });
+ //  }
+ }
+
+ - (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+
+ }
+
+ - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+
+ }
+
+ - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController failedToStartPictureInPictureWithError:(NSError *)error {
+
+ }
+
+ - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL))completionHandler {
+ //  NSAssert(_restoreUserInterfaceForPIPStopCompletionHandler == NULL, @"restoreUserInterfaceForPIPStopCompletionHandler was not called after picture in picture was exited.");
+ //  if (self.onRestoreUserInterfaceForPictureInPictureStop) {
+ //    self.onRestoreUserInterfaceForPictureInPictureStop(@{});
+ //  }
+   _restoreUserInterfaceForPIPStopCompletionHandler = completionHandler;
+     [self removePlayerLayer];
+ }
+ #endif
+
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -615,6 +771,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)seekTo:(FLTPositionMessage *)input error:(FlutterError **)error {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player seekTo:input.position.intValue];
+  [player usePlayerLayer: CGRectMake(0, 0, 340, 290)];
   [self.registry textureFrameAvailable:input.textureId.intValue];
 }
 
@@ -622,6 +779,17 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   FLTVideoPlayer *player = self.playersByTextureId[input.textureId];
   [player pause];
 }
+
+- (void)setPictureInPicture:(FLTPictureInPictureMessage*)input error:(FlutterError**)error {
+   FLTVideoPlayer* player = _players[input.textureId];
+     BOOL enabled = input.enabled;
+     if (enabled) {
+         [player usePlayerLayer: CGRectMake(input.left.floatValue, input.top.floatValue,
+                                            input.width.floatValue, input.height.floatValue)];
+     } else {
+         [player removePlayerLayer];
+     }
+ }
 
 - (void)setMixWithOthers:(FLTMixWithOthersMessage *)input
                    error:(FlutterError *_Nullable __autoreleasing *)error {
