@@ -103,6 +103,11 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
   Future<void> setMixWithOthers(bool mixWithOthers) {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
+
+  /// Sets the setPictureInPictureVideo.
+  Future<void> setPictureInPicture(int textureId, bool enabled, double left, double top, double width, double height) {
+    throw UnimplementedError('setPictureInPictureVideo() has not been implemented.');
+  }
 }
 
 /// Description of the data source used to create an instance of
@@ -332,16 +337,10 @@ class DurationRange {
   }
 
   @override
-  String toString() =>
-      '${objectRuntimeType(this, 'DurationRange')}(start: $start, end: $end)';
+  String toString() => '${objectRuntimeType(this, 'DurationRange')}(start: $start, end: $end)';
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DurationRange &&
-          runtimeType == other.runtimeType &&
-          start == other.start &&
-          end == other.end;
+  bool operator ==(Object other) => identical(this, other) || other is DurationRange && runtimeType == other.runtimeType && start == other.start && end == other.end;
 
   @override
   int get hashCode => Object.hash(start, end);
