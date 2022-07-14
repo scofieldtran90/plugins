@@ -20,7 +20,7 @@ dependencies:
     git:
       url: git@github.com:icapps/plugins.git
       path: packages/video_player/video_player_platform_interface
-      ref: feature/video_player_pip
+      ref: a83cee0f858ea6a6e8b51ae099cc2854839531b6
 dev_dependencies:
   flutter_driver:
     sdk: flutter
