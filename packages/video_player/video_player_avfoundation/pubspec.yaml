@@ -22,10 +22,7 @@ dependencies:
   flutter:
     sdk: flutter
   video_player_platform_interface:
-    git:
-      url: git@github.com:icapps/plugins.git
-      path: packages/video_player/video_player_platform_interface
-      ref: feature/video_player_pip
+    path: ../video_player_platform_interface
 
 dev_dependencies:
   flutter_test:
