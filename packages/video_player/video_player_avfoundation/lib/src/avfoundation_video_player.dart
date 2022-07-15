@@ -120,7 +120,7 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   Future<void> setPictureInPicture(int textureId, bool enabled, double left, double top, double width, double height) {
     return _api.setPictureInPicture(PictureInPictureMessage()
       ..textureId = textureId
-      ..enabled = enabled
+      ..enabled = enabled ? 1 : 0
       ..left = left
       ..top = top
       ..width = width
@@ -153,6 +153,10 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
           return VideoEvent(eventType: VideoEventType.bufferingStart);
         case 'bufferingEnd':
           return VideoEvent(eventType: VideoEventType.bufferingEnd);
+        case 'startingPiP':
+          return VideoEvent(eventType: VideoEventType.startingPiP);
+        case 'stoppedPiP':
+          return VideoEvent(eventType: VideoEventType.stoppedPiP);
         default:
           return VideoEvent(eventType: VideoEventType.unknown);
       }

@@ -252,7 +252,7 @@ class _AVFoundationVideoPlayerApiCodec extends StandardMessageCodec {
 
 class PictureInPictureMessage {
   int? textureId;
-  bool? enabled;
+  int? enabled;
   double? left;
   double? top;
   double? width;
@@ -275,7 +275,7 @@ class PictureInPictureMessage {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return PictureInPictureMessage()
       ..textureId = pigeonMap['textureId'] as int?
-      ..enabled = pigeonMap['enabled'] as bool?
+      ..enabled = pigeonMap['enabled'] as int?
       ..left = pigeonMap['left'] as double?
       ..top = pigeonMap['top'] as double?
       ..width = pigeonMap['width'] as double?

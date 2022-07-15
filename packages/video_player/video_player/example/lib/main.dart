@@ -255,7 +255,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
           ),
           TextButton(
             onPressed: () => _controller.setPIP(true, 0, 0, 300, 300),
-            child: Text('enable pip'),
+            child: const Text('enable pip'),
           )
         ],
       ),

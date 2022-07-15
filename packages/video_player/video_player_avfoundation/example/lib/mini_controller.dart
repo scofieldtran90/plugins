@@ -35,20 +35,16 @@ class VideoPlayerValue {
     this.isInitialized = false,
     this.isPlaying = false,
     this.isBuffering = false,
+    this.isShowingPIP = false,
     this.playbackSpeed = 1.0,
     this.errorDescription,
   });
 
   /// Returns an instance for a video that hasn't been loaded.
-  VideoPlayerValue.uninitialized()
-      : this(duration: Duration.zero, isInitialized: false);
+  VideoPlayerValue.uninitialized() : this(duration: Duration.zero, isInitialized: false);
 
   /// Returns an instance with the given [errorDescription].
-  VideoPlayerValue.erroneous(String errorDescription)
-      : this(
-            duration: Duration.zero,
-            isInitialized: false,
-            errorDescription: errorDescription);
+  VideoPlayerValue.erroneous(String errorDescription) : this(duration: Duration.zero, isInitialized: false, errorDescription: errorDescription);
 
   /// The total duration of the video.
   ///
@@ -66,6 +62,9 @@ class VideoPlayerValue {
 
   /// True if the video is currently buffering.
   final bool isBuffering;
+
+  /// True if the video is currently showing PIP.
+  final bool isShowingPIP;
 
   /// The current speed of the playback.
   final double playbackSpeed;
@@ -111,6 +110,7 @@ class VideoPlayerValue {
     List<DurationRange>? buffered,
     bool? isInitialized,
     bool? isPlaying,
+    bool? isShowingPIP,
     bool? isBuffering,
     double? playbackSpeed,
     String? errorDescription,
@@ -123,6 +123,7 @@ class VideoPlayerValue {
       isInitialized: isInitialized ?? this.isInitialized,
       isPlaying: isPlaying ?? this.isPlaying,
       isBuffering: isBuffering ?? this.isBuffering,
+      isShowingPIP: isShowingPIP ?? this.isShowingPIP,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       errorDescription: errorDescription ?? this.errorDescription,
     );
@@ -213,8 +214,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         break;
     }
 
-    _textureId = (await _platform.create(dataSourceDescription)) ??
-        kUninitializedTextureId;
+    _textureId = (await _platform.create(dataSourceDescription)) ?? kUninitializedTextureId;
     _creatingCompleter!.complete(null);
     final Completer<void> initializingCompleter = Completer<void>();
 
@@ -245,6 +245,12 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
           break;
         case VideoEventType.unknown:
           break;
+        case VideoEventType.startingPiP:
+          value = value.copyWith(isBuffering: false);
+          break;
+        case VideoEventType.stoppedPiP:
+          value = value.copyWith(isBuffering: false);
+          break;
       }
     }
 
@@ -257,9 +263,7 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
       }
     }
 
-    _eventSubscription = _platform
-        .videoEventsFor(_textureId)
-        .listen(eventListener, onError: errorListener);
+    _eventSubscription = _platform.videoEventsFor(_textureId).listen(eventListener, onError: errorListener);
     return initializingCompleter.future;
   }
 
@@ -402,9 +406,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return _textureId == MiniController.kUninitializedTextureId
-        ? Container()
-        : _platform.buildView(_textureId);
+    return _textureId == MiniController.kUninitializedTextureId ? Container() : _platform.buildView(_textureId);
   }
 }
 
