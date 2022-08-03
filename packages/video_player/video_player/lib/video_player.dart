@@ -697,6 +697,7 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   _VideoAppLifeCycleObserver(this._controller);
 
   bool _wasPlayingBeforePause = false;
+  bool _showingPip = false;
   final VideoPlayerController _controller;
 
   void initialize() {
