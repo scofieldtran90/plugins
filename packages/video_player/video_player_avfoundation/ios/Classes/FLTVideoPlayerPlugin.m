@@ -435,18 +435,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setPictureInPicture:(BOOL)pictureInPicture
  {
      self._pictureInPicture = pictureInPicture;
-     if (@available(iOS 9.0, *)) {
-         if (_pipController && self._pictureInPicture && ![_pipController isPictureInPictureActive]) {
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 [_pipController startPictureInPicture];
-             });
-         } else if (_pipController && !self._pictureInPicture && [_pipController isPictureInPictureActive]) {
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 [_pipController stopPictureInPicture];
-             });
-         } else {
-             // Fallback on earlier versions
-         } }
  }
 
  #if TARGET_OS_IOS
