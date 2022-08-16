@@ -240,6 +240,16 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         children: <Widget>[
           Container(padding: const EdgeInsets.only(top: 20.0)),
           const Text('With remote mp4'),
+          GestureDetector(
+            onTap: () => _controller.setPictureInPicture(enabled: !_controller.value.isShowingPIP),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 16,
+              ),
+              child: Text(_controller.value.isShowingPIP ? 'Stop PiP' : 'Start PiP'),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
@@ -250,8 +260,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 children: <Widget>[
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
-                  _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                  if (_controller.value.isShowingPIP) ...<Widget>[
+                    Container(color: Colors.white),
+                  ] else ...<Widget>[
+                    VideoProgressIndicator(_controller, allowScrubbing: true),
+                    _ControlsOverlay(controller: _controller),
+                  ],
                 ],
               ),
             ),
@@ -314,19 +328,6 @@ class _ControlsOverlay extends StatelessWidget {
           onTap: () {
             controller.value.isPlaying ? controller.pause() : controller.play();
           },
-        ),
-        Align(
-          alignment: Alignment.topCenter,
-          child: GestureDetector(
-            onTap: () => controller.setPictureInPicture(enabled: !controller.value.isShowingPIP),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('Toggle PIP'),
-            ),
-          ),
         ),
         Align(
           alignment: Alignment.topLeft,

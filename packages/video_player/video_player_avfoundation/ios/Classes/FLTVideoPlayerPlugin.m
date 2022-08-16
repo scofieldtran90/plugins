@@ -243,8 +243,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
   return self;
 }
+
 - (void)setPictureInPicture:(BOOL)pictureInPicture {
-#if TARGET_OS_IOS
     if (self._pictureInPicture == pictureInPicture) {
         return;
     }
@@ -263,9 +263,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
             // Fallback on earlier versions
         }
     }
-#endif
 }
 
+#if TARGET_OS_IOS
 - (void)setupPipController {
   if ([AVPictureInPictureController isPictureInPictureSupported]) {
     _pipController = [[AVPictureInPictureController alloc] initWithPlayerLayer:self._playerLayer];
@@ -281,22 +281,51 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)usePlayerLayer {
-    NSLog(@"Use player layer");
     if (_player) {
         self._playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         UIViewController* vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
         self._playerLayer.frame = CGRectMake(20, 155, 350, 350);
         self._playerLayer.needsDisplayOnBoundsChange = YES;
-        self._playerLayer.opacity = 0.01; //TODO FIX THIS HACK -> Add layer over video player texture layer. but below the flutter layer. so we can still see the controlls
+        self._playerLayer.opacity = 0;
         [vc.view.layer addSublayer:self._playerLayer];
         vc.view.layer.needsDisplayOnBoundsChange = YES;
         #if TARGET_OS_IOS
             [self setupPipController];
         #endif
-    } else {
-        NSLog(@"No player layer");
     }
 }
+#endif
+
+#if TARGET_OS_IOS
+- (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+    self._pictureInPicture = false;
+    self._playerLayer.opacity = 0;
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"stoppedPiP"});
+    }
+}
+
+- (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+    self._playerLayer.opacity = 1;
+    if (_eventSink != nil) {
+      _eventSink(@{@"event" : @"startingPiP"});
+    }
+    [self updatePlayingState];
+}
+
+- (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+}
+
+- (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+}
+
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController failedToStartPictureInPictureWithError:(NSError *)error {
+
+}
+
+- (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL))completionHandler {
+}
+#endif
 
 - (void)observeValueForKeyPath:(NSString *)path
                       ofObject:(id)object

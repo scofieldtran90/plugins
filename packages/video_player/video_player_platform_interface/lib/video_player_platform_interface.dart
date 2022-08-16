@@ -290,12 +290,6 @@ enum VideoEventType {
   /// The video stopped to picture in picture.
   stoppedPiP,
 
-  /// Event when picture in picture expand button is pressed
-  expandButtonTapPiP,
-
-  /// Event when picture in picture close button is pressed
-  closeButtonTapPiP,
-
   /// An unknown event has been received.
   unknown,
 }
