@@ -47,6 +47,7 @@ class VideoPlayerValue {
     this.isPlaying = false,
     this.isLooping = false,
     this.isBuffering = false,
+    this.isShowingPIP = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
     this.rotationCorrection = 0,
@@ -105,6 +106,9 @@ class VideoPlayerValue {
   /// The current speed of the playback.
   final double playbackSpeed;
 
+  /// True if the video is currently showing PIP.
+  final bool isShowingPIP;
+
   /// A description of the error if present.
   ///
   /// If [hasError] is false this is `null`.
@@ -153,6 +157,7 @@ class VideoPlayerValue {
     bool? isPlaying,
     bool? isLooping,
     bool? isBuffering,
+    bool? isShowingPIP,
     double? volume,
     double? playbackSpeed,
     int? rotationCorrection,
@@ -169,6 +174,7 @@ class VideoPlayerValue {
       isPlaying: isPlaying ?? this.isPlaying,
       isLooping: isLooping ?? this.isLooping,
       isBuffering: isBuffering ?? this.isBuffering,
+      isShowingPIP: isShowingPIP ?? this.isShowingPIP,
       volume: volume ?? this.volume,
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       rotationCorrection: rotationCorrection ?? this.rotationCorrection,
@@ -191,6 +197,7 @@ class VideoPlayerValue {
         'isPlaying: $isPlaying, '
         'isLooping: $isLooping, '
         'isBuffering: $isBuffering, '
+        'isShowingPIP: $isShowingPIP, '
         'volume: $volume, '
         'playbackSpeed: $playbackSpeed, '
         'errorDescription: $errorDescription)';
@@ -400,6 +407,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         case VideoEventType.bufferingEnd:
           value = value.copyWith(isBuffering: false);
           break;
+        case VideoEventType.startingPiP:
+          value = value.copyWith(isShowingPIP: true);
+          break;
+        case VideoEventType.stoppedPiP:
+          value = value.copyWith(isShowingPIP: false);
+          break;
         case VideoEventType.unknown:
           break;
       }
@@ -517,6 +530,21 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
+  }
+
+  // TODO ADD DOCS
+  Future<void> setPictureInPicture({
+    required bool enabled,
+    double left = 0,
+    double top = 0,
+    double width = 0,
+    double height = 0,
+  }) async {
+    if (!value.isInitialized || _isDisposed) {
+      return;
+    }
+    value = value.copyWith(isShowingPIP: enabled);
+    await _videoPlayerPlatform.setPictureInPicture(_textureId, enabled);
   }
 
   Future<void> _applyPlaybackSpeed() async {
@@ -690,6 +718,7 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
   _VideoAppLifeCycleObserver(this._controller);
 
   bool _wasPlayingBeforePause = false;
+  bool _showingPip = false;
   final VideoPlayerController _controller;
 
   void initialize() {
@@ -701,7 +730,10 @@ class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.paused:
         _wasPlayingBeforePause = _controller.value.isPlaying;
-        _controller.pause();
+        _showingPip = _controller.value.isShowingPIP;
+        if (!_showingPip) {
+          _controller.pause();
+        }
         break;
       case AppLifecycleState.resumed:
         if (_wasPlayingBeforePause) {
@@ -734,9 +766,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
   _VideoPlayerState() {
     _listener = () {
       final int newTextureId = widget.controller.textureId;
-      if (newTextureId != _textureId) {
+      final bool newEnabledVideo = !widget.controller.value.isShowingPIP;
+      if (newTextureId != _textureId || newEnabledVideo != _enabledVideo) {
         setState(() {
           _textureId = newTextureId;
+          // _enabledVideo = newEnabledVideo;
         });
       }
     };
@@ -745,11 +779,13 @@ class _VideoPlayerState extends State<VideoPlayer> {
   late VoidCallback _listener;
 
   late int _textureId;
+  late bool _enabledVideo;
 
   @override
   void initState() {
     super.initState();
     _textureId = widget.controller.textureId;
+    _enabledVideo = !widget.controller.value.isShowingPIP;
     // Need to listen for initialization events since the actual texture ID
     // becomes available after asynchronous initialization finishes.
     widget.controller.addListener(_listener);
@@ -760,6 +796,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
     super.didUpdateWidget(oldWidget);
     oldWidget.controller.removeListener(_listener);
     _textureId = widget.controller.textureId;
+    _enabledVideo = !widget.controller.value.isShowingPIP;
     widget.controller.addListener(_listener);
   }
 

@@ -57,6 +57,12 @@ class MixWithOthersMessage {
   bool mixWithOthers;
 }
 
+class PictureInPictureMessage {
+  PictureInPictureMessage(this.textureId, this.enabled);
+  int textureId;
+  int enabled;
+}
+
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class AVFoundationVideoPlayerApi {
   @ObjCSelector('initialize')
@@ -81,4 +87,6 @@ abstract class AVFoundationVideoPlayerApi {
   void pause(TextureMessage msg);
   @ObjCSelector('setMixWithOthers:')
   void setMixWithOthers(MixWithOthersMessage msg);
+  @ObjCSelector('setPictureInPicture:')
+  void setPictureInPicture(PictureInPictureMessage msg);
 }
