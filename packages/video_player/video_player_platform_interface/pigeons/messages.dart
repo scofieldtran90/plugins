@@ -70,6 +70,17 @@ class PictureInPictureMessage {
   int enabled;
 }
 
+class PreparePictureInPictureMessage {
+  PreparePictureInPictureMessage(
+      this.textureId, this.top, this.left, this.width, this.height);
+
+  int textureId;
+  double top;
+  double left;
+  double width;
+  double height;
+}
+
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
   void initialize();
@@ -83,5 +94,6 @@ abstract class VideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  void preparePictureInPicture(PreparePictureInPictureMessage msg);
   void setPictureInPicture(PictureInPictureMessage msg);
 }

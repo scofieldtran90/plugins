@@ -533,17 +533,31 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   // TODO ADD DOCS
-  Future<void> setPictureInPicture({
-    required bool enabled,
-    double left = 0,
+  Future<void> preparePictureInPicture({
     double top = 0,
+    double left = 0,
     double width = 0,
     double height = 0,
   }) async {
     if (!value.isInitialized || _isDisposed) {
       return;
     }
-    value = value.copyWith(isShowingPIP: enabled);
+    await _videoPlayerPlatform.preparePictureInPicture(
+      textureId: _textureId,
+      top: top,
+      left: left,
+      width: width,
+      height: height,
+    );
+  }
+
+  // TODO ADD DOCS
+  Future<void> setPictureInPicture(
+    bool enabled,
+  ) async {
+    if (!value.isInitialized || _isDisposed) {
+      return;
+    }
     await _videoPlayerPlatform.setPictureInPicture(_textureId, enabled);
   }
 

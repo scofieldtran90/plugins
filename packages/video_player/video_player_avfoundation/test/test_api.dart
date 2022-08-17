@@ -36,11 +36,14 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
     } else if (value is PositionMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is TextureMessage) {
+    } else if (value is PreparePictureInPictureMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else if (value is VolumeMessage) {
+    } else if (value is TextureMessage) {
       buffer.putUint8(135);
+      writeValue(buffer, value.encode());
+    } else if (value is VolumeMessage) {
+      buffer.putUint8(136);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -69,9 +72,12 @@ class _TestHostVideoPlayerApiCodec extends StandardMessageCodec {
         return PositionMessage.decode(readValue(buffer)!);
 
       case 134:
-        return TextureMessage.decode(readValue(buffer)!);
+        return PreparePictureInPictureMessage.decode(readValue(buffer)!);
 
       case 135:
+        return TextureMessage.decode(readValue(buffer)!);
+
+      case 136:
         return VolumeMessage.decode(readValue(buffer)!);
 
       default:
@@ -94,6 +100,7 @@ abstract class TestHostVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  void preparePictureInPicture(PreparePictureInPictureMessage msg);
   void setPictureInPicture(PictureInPictureMessage msg);
   static void setup(TestHostVideoPlayerApi? api,
       {BinaryMessenger? binaryMessenger}) {
@@ -301,6 +308,27 @@ abstract class TestHostVideoPlayerApi {
           assert(arg_msg != null,
               'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setMixWithOthers was null, expected non-null MixWithOthersMessage.');
           api.setMixWithOthers(arg_msg!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final PreparePictureInPictureMessage? arg_msg =
+              (args[0] as PreparePictureInPictureMessage?);
+          assert(arg_msg != null,
+              'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.preparePictureInPicture was null, expected non-null PreparePictureInPictureMessage.');
+          api.preparePictureInPicture(arg_msg!);
           return <Object?, Object?>{};
         });
       }

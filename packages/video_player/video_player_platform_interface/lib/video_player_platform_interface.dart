@@ -104,6 +104,18 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError('setMixWithOthers() has not been implemented.');
   }
 
+  /// Prepare pictur in picture by passing the location of the video player view
+  Future<void> preparePictureInPicture({
+    required int textureId,
+    required double top,
+    required double left,
+    required double width,
+    required double height,
+  }) {
+    throw UnimplementedError(
+        'preparePictureInPicture() has not been implemented.');
+  }
+
   /// Sets the setPictureInPictureVideo.
   Future<void> setPictureInPicture(int textureId, bool enabled) {
     throw UnimplementedError(

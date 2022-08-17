@@ -239,7 +239,6 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   [self addObservers:item];
 
   [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
-  [self usePlayerLayer];
 
   return self;
 }
@@ -252,6 +251,10 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     self._pictureInPicture = pictureInPicture;
     if (@available(iOS 9.0, *)) {
         if (_pipController && self._pictureInPicture && ![_pipController isPictureInPictureActive]) {
+            self._playerLayer.opacity = 1;
+            if (_eventSink != nil) {
+              _eventSink(@{@"event" : @"startingPiP"});
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_pipController startPictureInPicture];
             });
@@ -280,11 +283,11 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
-- (void)usePlayerLayer {
+- (void)usePlayerLayer: (CGRect) frame {
     if (_player) {
         self._playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         UIViewController* vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-        self._playerLayer.frame = CGRectMake(20, 155, 350, 350);
+        self._playerLayer.frame = frame;
         self._playerLayer.needsDisplayOnBoundsChange = YES;
         self._playerLayer.opacity = 0;
         [vc.view.layer addSublayer:self._playerLayer];
@@ -723,6 +726,13 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   } else {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
   }
+}
+
+
+- (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage*)input error:(FlutterError**)error {
+   FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+   [player usePlayerLayer:CGRectMake(input.left.floatValue, input.top.floatValue,
+                                    input.width.floatValue, input.height.floatValue)];
 }
 
 - (void)setPictureInPicture:(FLTPictureInPictureMessage*)input error:(FlutterError**)error {

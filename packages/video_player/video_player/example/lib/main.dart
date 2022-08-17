@@ -85,10 +85,13 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
                 leading: Icon(Icons.cake),
                 title: Text('Video video'),
               ),
-              Stack(alignment: FractionalOffset.bottomRight + const FractionalOffset(-0.1, -0.1), children: <Widget>[
-                _ButterFlyAssetVideo(),
-                Image.asset('assets/flutter-mark-square-64.png'),
-              ]),
+              Stack(
+                  alignment: FractionalOffset.bottomRight +
+                      const FractionalOffset(-0.1, -0.1),
+                  children: <Widget>[
+                    _ButterFlyAssetVideo(),
+                    Image.asset('assets/flutter-mark-square-64.png'),
+                  ]),
             ],
           ),
         ])),
@@ -204,11 +207,14 @@ class _BumbleBeeRemoteVideo extends StatefulWidget {
 class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   late VideoPlayerController _controller;
 
-  final GlobalKey<State<StatefulWidget>> _key = GlobalKey<State<StatefulWidget>>();
+  final GlobalKey<State<StatefulWidget>> _key =
+      GlobalKey<State<StatefulWidget>>();
 
   Future<ClosedCaptionFile> _loadCaptions() async {
-    final String fileContents = await DefaultAssetBundle.of(context).loadString('assets/bumble_bee_captions.vtt');
-    return WebVTTCaptionFile(fileContents); // For vtt files, use WebVTTCaptionFile
+    final String fileContents = await DefaultAssetBundle.of(context)
+        .loadString('assets/bumble_bee_captions.vtt');
+    return WebVTTCaptionFile(
+        fileContents); // For vtt files, use WebVTTCaptionFile
   }
 
   @override
@@ -240,15 +246,30 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         children: <Widget>[
           Container(padding: const EdgeInsets.only(top: 20.0)),
           const Text('With remote mp4'),
-          GestureDetector(
-            onTap: () => _controller.setPictureInPicture(enabled: !_controller.value.isShowingPIP),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text(_controller.value.isShowingPIP ? 'Stop PiP' : 'Start PiP'),
-            ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () {
+              final RenderBox? box =
+                  _key.currentContext?.findRenderObject() as RenderBox?;
+              if (box == null) {
+                return;
+              }
+              final Offset offset = box.localToGlobal(Offset.zero);
+              _controller.preparePictureInPicture(
+                top: offset.dy,
+                left: offset.dx,
+                width: box.size.width,
+                height: box.size.height,
+              );
+            },
+            child: Text('Prepare'),
+          ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () => _controller
+                .setPictureInPicture(!_controller.value.isShowingPIP),
+            child:
+                Text(_controller.value.isShowingPIP ? 'Stop PiP' : 'Start PiP'),
           ),
           Container(
             padding: const EdgeInsets.all(20),
@@ -277,7 +298,8 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
 }
 
 class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key? key, required this.controller}) : super(key: key);
+  const _ControlsOverlay({Key? key, required this.controller})
+      : super(key: key);
 
   static const List<Duration> _exampleCaptionOffsets = <Duration>[
     Duration(seconds: -10),
@@ -405,7 +427,8 @@ class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
   void initState() {
     super.initState();
 
-    _videoPlayerController = VideoPlayerController.asset('assets/Butterfly-209.mp4');
+    _videoPlayerController =
+        VideoPlayerController.asset('assets/Butterfly-209.mp4');
     _videoPlayerController.addListener(() {
       if (startedPlaying && !_videoPlayerController.value.isPlaying) {
         Navigator.pop(context);

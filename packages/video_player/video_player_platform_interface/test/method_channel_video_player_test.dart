@@ -23,6 +23,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   VolumeMessage? volumeMessage;
   PlaybackSpeedMessage? playbackSpeedMessage;
   MixWithOthersMessage? mixWithOthersMessage;
+  PreparePictureInPictureMessage? preparePictureInPictureMessage;
   PictureInPictureMessage? pictureInPictureMessage;
 
   @override
@@ -59,6 +60,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setMixWithOthers(MixWithOthersMessage arg) {
     log.add('setMixWithOthers');
     mixWithOthersMessage = arg;
+  }
+
+  @override
+  void preparePictureInPicture(PreparePictureInPictureMessage msg) {
+    log.add('preparePictureInPicture');
+    preparePictureInPictureMessage = msg;
   }
 
   @override
