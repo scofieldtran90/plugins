@@ -106,7 +106,7 @@ class VideoPlayerValue {
   /// The current speed of the playback.
   final double playbackSpeed;
 
-  /// True if Picture in Picture is currently active.
+  /// True if picture in picture is currently active.
   final bool isPipActive;
 
   /// A description of the error if present.
@@ -532,10 +532,12 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
+  /// Returns true if picture in picture is supported on the device.
   Future<bool> isPictureInPictureSupported() {
     return _videoPlayerPlatform.isPictureInPictureSupported();
   }
 
+  /// Prepare picture in picture by passing the location of the video player view
   Future<void> preparePictureInPicture({
     double top = 0,
     double left = 0,
@@ -554,6 +556,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
+  /// Start/stop picture in picture mode
   Future<void> setPictureInPicture(
     bool enabled,
   ) async {

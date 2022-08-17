@@ -275,8 +275,8 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
           ),
           MaterialButton(
             color: Colors.blue,
-            onPressed: () => _controller
-                .setPictureInPicture(!_controller.value.isPipActive),
+            onPressed: () =>
+                _controller.setPictureInPicture(!_controller.value.isPipActive),
             child:
                 Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
           ),
@@ -295,11 +295,9 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const <Widget>[
-                        Icon(
-                          Icons.add_a_photo_outlined,
-                        ),
+                        Icon(Icons.picture_in_picture),
                         SizedBox(height: 8),
-                        Text('Picture in Picture'),
+                        Text('This video is playing in picture in picture.'),
                       ],
                     ),
                   ] else ...<Widget>[

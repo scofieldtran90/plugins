@@ -122,7 +122,7 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
         'preparePictureInPicture() has not been implemented.');
   }
 
-  /// Sets the setPictureInPictureVideo.
+  /// Start/stop picture in picture mode
   Future<void> setPictureInPicture(int textureId, bool enabled) {
     throw UnimplementedError(
         'setPictureInPictureVideo() has not been implemented.');
