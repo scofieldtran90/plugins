@@ -276,9 +276,9 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
           MaterialButton(
             color: Colors.blue,
             onPressed: () => _controller
-                .setPictureInPicture(!_controller.value.isShowingPIP),
+                .setPictureInPicture(!_controller.value.isPipActive),
             child:
-                Text(_controller.value.isShowingPIP ? 'Stop PiP' : 'Start PiP'),
+                Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
           ),
           Container(
             padding: const EdgeInsets.all(20),
@@ -290,7 +290,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 children: <Widget>[
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
-                  if (_controller.value.isShowingPIP) ...<Widget>[
+                  if (_controller.value.isPipActive) ...<Widget>[
                     Container(color: Colors.white),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
