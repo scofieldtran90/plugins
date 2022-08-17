@@ -283,6 +283,16 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                   ClosedCaption(text: _controller.value.caption.text),
                   if (_controller.value.isShowingPIP) ...<Widget>[
                     Container(color: Colors.white),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const <Widget>[
+                        Icon(
+                          Icons.add_a_photo_outlined,
+                        ),
+                        SizedBox(height: 8),
+                        Text('Picture in Picture'),
+                      ],
+                    ),
                   ] else ...<Widget>[
                     VideoProgressIndicator(_controller, allowScrubbing: true),
                     _ControlsOverlay(controller: _controller),

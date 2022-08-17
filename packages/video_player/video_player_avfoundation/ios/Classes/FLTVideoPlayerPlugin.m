@@ -251,7 +251,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     self._pictureInPicture = pictureInPicture;
     if (@available(iOS 9.0, *)) {
         if (_pipController && self._pictureInPicture && ![_pipController isPictureInPictureActive]) {
-            self._playerLayer.opacity = 1;
+            self._playerLayer.opacity = 0.001;
             if (_eventSink != nil) {
               _eventSink(@{@"event" : @"startingPiP"});
             }
@@ -309,7 +309,7 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
-    self._playerLayer.opacity = 1;
+    self._playerLayer.opacity = 0.001;
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"startingPiP"});
     }
