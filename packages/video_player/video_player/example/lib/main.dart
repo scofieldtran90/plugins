@@ -209,6 +209,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
 
   final GlobalKey<State<StatefulWidget>> _key =
       GlobalKey<State<StatefulWidget>>();
+  final Key _pictureInPictureKey = UniqueKey();
 
   Future<ClosedCaptionFile> _loadCaptions() async {
     final String fileContents = await DefaultAssetBundle.of(context)
@@ -246,6 +247,14 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
         children: <Widget>[
           Container(padding: const EdgeInsets.only(top: 20.0)),
           const Text('With remote mp4'),
+          FutureBuilder<bool>(
+            key: _pictureInPictureKey,
+            future: _controller.isPictureInPictureSupported(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) =>
+                Text(snapshot.data ?? false
+                    ? 'Pip is suported'
+                    : 'Pip is not supported'),
+          ),
           MaterialButton(
             color: Colors.blue,
             onPressed: () {
@@ -262,7 +271,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 height: box.size.height,
               );
             },
-            child: Text('Prepare'),
+            child: const Text('Prepare'),
           ),
           MaterialButton(
             color: Colors.blue,

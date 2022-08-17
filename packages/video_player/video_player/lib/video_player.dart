@@ -532,7 +532,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
-  // TODO ADD DOCS
+  Future<bool> isPictureInPictureSupported() {
+    return _videoPlayerPlatform.isPictureInPictureSupported();
+  }
+
   Future<void> preparePictureInPicture({
     double top = 0,
     double left = 0,
@@ -551,7 +554,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
-  // TODO ADD DOCS
   Future<void> setPictureInPicture(
     bool enabled,
   ) async {

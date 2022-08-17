@@ -94,6 +94,7 @@ abstract class VideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  bool isPictureInPictureSupported();
   void preparePictureInPicture(PreparePictureInPictureMessage msg);
   void setPictureInPicture(PictureInPictureMessage msg);
 }

@@ -168,6 +168,11 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<bool> isPictureInPictureSupported() {
+    return _api.isPictureInPictureSupported();
+  }
+
+  @override
   Future<void> preparePictureInPicture({
     required int textureId,
     required double top,

@@ -94,6 +94,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   }
 
   @override
+  bool isPictureInPictureSupported() {
+    log.add('isPictureInPictureSupported');
+    return true;
+  }
+
+  @override
   void preparePictureInPicture(PreparePictureInPictureMessage msg) {
     log.add('preparePictureInPicture');
     preparePictureInPictureMessage = msg;

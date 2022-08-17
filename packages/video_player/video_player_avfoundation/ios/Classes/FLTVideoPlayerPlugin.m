@@ -740,4 +740,8 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
    [player setPictureInPicture:input.enabled.intValue == 1];
 }
 
+- (nullable NSNumber *)isPictureInPictureSupported:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    return [NSNumber numberWithBool:[AVPictureInPictureController isPictureInPictureSupported]];
+}
+
 @end

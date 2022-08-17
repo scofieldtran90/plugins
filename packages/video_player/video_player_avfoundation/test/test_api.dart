@@ -100,6 +100,7 @@ abstract class TestHostVideoPlayerApi {
   void seekTo(PositionMessage msg);
   void pause(TextureMessage msg);
   void setMixWithOthers(MixWithOthersMessage msg);
+  bool isPictureInPictureSupported();
   void preparePictureInPicture(PreparePictureInPictureMessage msg);
   void setPictureInPicture(PictureInPictureMessage msg);
   static void setup(TestHostVideoPlayerApi? api,
@@ -309,6 +310,21 @@ abstract class TestHostVideoPlayerApi {
               'Argument for dev.flutter.pigeon.AVFoundationVideoPlayerApi.setMixWithOthers was null, expected non-null MixWithOthersMessage.');
           api.setMixWithOthers(arg_msg!);
           return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.AVFoundationVideoPlayerApi.isPictureInPictureSupported',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          // ignore message
+          final bool output = api.isPictureInPictureSupported();
+          return <Object?, Object?>{'result': output};
         });
       }
     }

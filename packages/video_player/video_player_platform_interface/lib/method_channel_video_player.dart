@@ -145,6 +145,33 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         .setMixWithOthers(MixWithOthersMessage(mixWithOthers: mixWithOthers));
   }
 
+  @override
+  Future<bool> isPictureInPictureSupported() {
+    return _api.isPictureInPictureSupported();
+  }
+
+  @override
+  Future<void> preparePictureInPicture({
+    required int textureId,
+    required double top,
+    required double left,
+    required double width,
+    required double height,
+  }) {
+    return _api.preparePictureInPicture(PreparePictureInPictureMessage(
+        textureId: textureId,
+        top: top,
+        left: left,
+        width: width,
+        height: height));
+  }
+
+  @override
+  Future<void> setPictureInPicture(int textureId, bool enabled) {
+    return _api.setPictureInPicture(PictureInPictureMessage(
+        textureId: textureId, enabled: enabled ? 1 : 0));
+  }
+
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }

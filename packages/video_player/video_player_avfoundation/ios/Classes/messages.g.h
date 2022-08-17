@@ -127,6 +127,8 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
 - (void)seekTo:(FLTPositionMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)pause:(FLTTextureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setMixWithOthers:(FLTMixWithOthersMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
+/// @return `nil` only when `error != nil`.
+- (nullable NSNumber *)isPictureInPictureSupported:(FlutterError *_Nullable *_Nonnull)error;
 - (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setPictureInPicture:(FLTPictureInPictureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 @end

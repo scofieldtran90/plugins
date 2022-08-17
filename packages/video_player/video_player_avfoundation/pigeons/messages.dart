@@ -98,6 +98,8 @@ abstract class AVFoundationVideoPlayerApi {
   void pause(TextureMessage msg);
   @ObjCSelector('setMixWithOthers:')
   void setMixWithOthers(MixWithOthersMessage msg);
+  @ObjCSelector('isPictureInPictureSupported')
+  bool isPictureInPictureSupported();
   @ObjCSelector('preparePictureInPicture:')
   void preparePictureInPicture(PreparePictureInPictureMessage msg);
   @ObjCSelector('setPictureInPicture:')
