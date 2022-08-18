@@ -277,25 +277,25 @@ class PlacePolylineBodyState extends State<PlacePolylineBody> {
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changeStartCap(selectedId),
-                          child: const Text('change start cap [Android only]'),
+                          child: const Text('change start cap'),
                         ),
                         TextButton(
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changeEndCap(selectedId),
-                          child: const Text('change end cap [Android only]'),
+                          child: const Text('change end cap'),
                         ),
                         TextButton(
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changeJointType(selectedId),
-                          child: const Text('change joint type [Android only]'),
+                          child: const Text('change joint type'),
                         ),
                         TextButton(
                           onPressed: isIOS || (selectedId == null)
                               ? null
                               : () => _changePattern(selectedId),
-                          child: const Text('change pattern [Android only]'),
+                          child: const Text('change pattern'),
                         ),
                       ],
                     )
