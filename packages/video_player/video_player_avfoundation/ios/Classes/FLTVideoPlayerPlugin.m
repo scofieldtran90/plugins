@@ -32,7 +32,7 @@
 }
 @end
 
-@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler, AVPictureInPictureControllerDelegate>
+@interface FLTVideoPlayer : NSObject <FlutterTexture, FlutterStreamHandler, AVPictureInPictureControllerDelegate, AVRoutePickerViewDelegate>
 @property(readonly, nonatomic) AVPlayer *player;
 @property(readonly, nonatomic) AVPlayerItemVideoOutput *videoOutput;
 @property(readonly, nonatomic) CADisplayLink *displayLink;
@@ -268,6 +268,34 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
     }
 }
 
+- (void)setAirPlay:(BOOL)airPlay {
+    if (_player) {
+        if (@available(iOS 11.0, *)) {
+            CGRect buttonFrame = CGRectMake(50, 50, 44, 44);
+            
+            _player.allowsExternalPlayback = true;
+            
+            AVRoutePickerView *airplayButton = [[AVRoutePickerView alloc] initWithFrame:buttonFrame];
+            airplayButton.activeTintColor = [UIColor blueColor];
+            airplayButton.tintColor = [UIColor grayColor];
+            airplayButton.delegate = self;
+//            airplayButton.translatesAutoresizingMaskIntoConstraints = true;
+            UIViewController* vc = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+            [vc.view addSubview: airplayButton];
+        }
+    }
+}
+
+
+- (void) routePickerViewWillBeginPresentingRoutes:(AVRoutePickerView *)routePickerView  API_AVAILABLE(ios(11.0)){
+    NSLog(@"Will present routes");
+}
+
+
+- (void) routePickerViewDidEndPresentingRoutes:(AVRoutePickerView *)routePickerView  API_AVAILABLE(ios(11.0)){
+    NSLog(@"End presenting routes");
+}
+    
 #if TARGET_OS_IOS
 - (void)setupPipController {
   if ([AVPictureInPictureController isPictureInPictureSupported]) {
@@ -742,6 +770,11 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (nullable NSNumber *)isPictureInPictureSupported:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
     return [NSNumber numberWithBool:[AVPictureInPictureController isPictureInPictureSupported]];
+}
+
+- (void)setAirPlay:(nonnull FLTAirPlayMessage *)input error:(FlutterError * _Nullable __autoreleasing * _Nonnull)error {
+    FLTVideoPlayer* player = self.playersByTextureId[input.textureId];
+    [player setAirPlay:input.enabled.intValue == 1];
 }
 
 @end

@@ -95,6 +95,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
   Future<bool> isPictureInPictureSupported() async {
     return true;
   }
+
+  @override
+  Future<void> setAirPlay(bool enabled) async {}
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>

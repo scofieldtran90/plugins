@@ -127,6 +127,12 @@ abstract class VideoPlayerPlatform extends PlatformInterface {
     throw UnimplementedError(
         'setPictureInPictureVideo() has not been implemented.');
   }
+
+  /// Start/stop picture in picture mode
+  Future<void> setAirPlay(int textureId, bool enabled) {
+    throw UnimplementedError(
+        'setAirPlay() has not been implemented.');
+  }
 }
 
 /// Description of the data source used to create an instance of

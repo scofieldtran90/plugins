@@ -70,6 +70,13 @@ class PictureInPictureMessage {
   int enabled;
 }
 
+class AirPlayMessage {
+  AirPlayMessage(this.textureId, this.enabled);
+
+  int textureId;
+  int enabled;
+}
+
 class PreparePictureInPictureMessage {
   PreparePictureInPictureMessage(
       this.textureId, this.top, this.left, this.width, this.height);
@@ -97,4 +104,5 @@ abstract class VideoPlayerApi {
   bool isPictureInPictureSupported();
   void preparePictureInPicture(PreparePictureInPictureMessage msg);
   void setPictureInPicture(PictureInPictureMessage msg);
+  void setAirPlay(AirPlayMessage msg);
 }

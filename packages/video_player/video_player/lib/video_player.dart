@@ -584,6 +584,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     );
   }
 
+  Future<void> setAirPlay(bool enabled) async {
+    if (!value.isInitialized || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.setAirPlay(_textureId, enabled);
+  }
+
   /// The position in the current video.
   Future<Duration?> get position async {
     if (_isDisposed) {

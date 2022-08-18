@@ -63,6 +63,13 @@ class PictureInPictureMessage {
   int enabled;
 }
 
+class AirPlayMessage {
+  AirPlayMessage(this.textureId, this.enabled);
+
+  int textureId;
+  int enabled;
+}
+
 class PreparePictureInPictureMessage {
   PreparePictureInPictureMessage(
       this.textureId, this.top, this.left, this.width, this.height);
@@ -104,4 +111,6 @@ abstract class AVFoundationVideoPlayerApi {
   void preparePictureInPicture(PreparePictureInPictureMessage msg);
   @ObjCSelector('setPictureInPicture:')
   void setPictureInPicture(PictureInPictureMessage msg);
+  @ObjCSelector('setAirPlay:')
+  void setAirPlay(AirPlayMessage msg);
 }

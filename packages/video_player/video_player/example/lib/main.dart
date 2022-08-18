@@ -280,6 +280,12 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
             child:
                 Text(_controller.value.isPipActive ? 'Stop PiP' : 'Start PiP'),
           ),
+          MaterialButton(
+            color: Colors.blue,
+            onPressed: () =>
+                _controller.setAirPlay(true),
+            child: const Text('Start airplay'),
+          ),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(

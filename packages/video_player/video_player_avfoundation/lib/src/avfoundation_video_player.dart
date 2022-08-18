@@ -197,6 +197,14 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
     ));
   }
 
+  @override
+  Future<void> setAirPlay(int textureId, bool enabled) {
+    return _api.setAirPlay(AirPlayMessage(
+      textureId: textureId,
+      enabled: enabled ? 1 : 0,
+    ));
+  }
+
   EventChannel _eventChannelFor(int textureId) {
     return EventChannel('flutter.io/videoPlayer/videoEvents$textureId');
   }

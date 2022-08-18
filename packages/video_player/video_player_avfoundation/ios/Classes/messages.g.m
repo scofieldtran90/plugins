@@ -66,6 +66,10 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (FLTPictureInPictureMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@interface FLTAirPlayMessage ()
++ (FLTAirPlayMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 @interface FLTPreparePictureInPictureMessage ()
 + (FLTPreparePictureInPictureMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
@@ -239,6 +243,27 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 }
 @end
 
+@implementation FLTAirPlayMessage
++ (instancetype)makeWithTextureId:(NSNumber *)textureId
+    enabled:(NSNumber *)enabled {
+  FLTAirPlayMessage* pigeonResult = [[FLTAirPlayMessage alloc] init];
+  pigeonResult.textureId = textureId;
+  pigeonResult.enabled = enabled;
+  return pigeonResult;
+}
++ (FLTAirPlayMessage *)fromMap:(NSDictionary *)dict {
+  FLTAirPlayMessage *pigeonResult = [[FLTAirPlayMessage alloc] init];
+  pigeonResult.textureId = GetNullableObject(dict, @"textureId");
+  NSAssert(pigeonResult.textureId != nil, @"");
+  pigeonResult.enabled = GetNullableObject(dict, @"enabled");
+  NSAssert(pigeonResult.enabled != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.textureId ? self.textureId : [NSNull null]), @"textureId", (self.enabled ? self.enabled : [NSNull null]), @"enabled", nil];
+}
+@end
+
 @implementation FLTPreparePictureInPictureMessage
 + (instancetype)makeWithTextureId:(NSNumber *)textureId
     top:(NSNumber *)top
@@ -279,30 +304,33 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 {
   switch (type) {
     case 128:     
-      return [FLTCreateMessage fromMap:[self readValue]];
+      return [FLTAirPlayMessage fromMap:[self readValue]];
     
     case 129:     
-      return [FLTLoopingMessage fromMap:[self readValue]];
+      return [FLTCreateMessage fromMap:[self readValue]];
     
     case 130:     
-      return [FLTMixWithOthersMessage fromMap:[self readValue]];
+      return [FLTLoopingMessage fromMap:[self readValue]];
     
     case 131:     
-      return [FLTPictureInPictureMessage fromMap:[self readValue]];
+      return [FLTMixWithOthersMessage fromMap:[self readValue]];
     
     case 132:     
-      return [FLTPlaybackSpeedMessage fromMap:[self readValue]];
+      return [FLTPictureInPictureMessage fromMap:[self readValue]];
     
     case 133:     
-      return [FLTPositionMessage fromMap:[self readValue]];
+      return [FLTPlaybackSpeedMessage fromMap:[self readValue]];
     
     case 134:     
-      return [FLTPreparePictureInPictureMessage fromMap:[self readValue]];
+      return [FLTPositionMessage fromMap:[self readValue]];
     
     case 135:     
-      return [FLTTextureMessage fromMap:[self readValue]];
+      return [FLTPreparePictureInPictureMessage fromMap:[self readValue]];
     
     case 136:     
+      return [FLTTextureMessage fromMap:[self readValue]];
+    
+    case 137:     
       return [FLTVolumeMessage fromMap:[self readValue]];
     
     default:    
@@ -317,40 +345,44 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @implementation FLTAVFoundationVideoPlayerApiCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[FLTCreateMessage class]]) {
+  if ([value isKindOfClass:[FLTAirPlayMessage class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTLoopingMessage class]]) {
+  if ([value isKindOfClass:[FLTCreateMessage class]]) {
     [self writeByte:129];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTMixWithOthersMessage class]]) {
+  if ([value isKindOfClass:[FLTLoopingMessage class]]) {
     [self writeByte:130];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTPictureInPictureMessage class]]) {
+  if ([value isKindOfClass:[FLTMixWithOthersMessage class]]) {
     [self writeByte:131];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTPlaybackSpeedMessage class]]) {
+  if ([value isKindOfClass:[FLTPictureInPictureMessage class]]) {
     [self writeByte:132];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTPositionMessage class]]) {
+  if ([value isKindOfClass:[FLTPlaybackSpeedMessage class]]) {
     [self writeByte:133];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTPreparePictureInPictureMessage class]]) {
+  if ([value isKindOfClass:[FLTPositionMessage class]]) {
     [self writeByte:134];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTTextureMessage class]]) {
+  if ([value isKindOfClass:[FLTPreparePictureInPictureMessage class]]) {
     [self writeByte:135];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[FLTVolumeMessage class]]) {
+  if ([value isKindOfClass:[FLTTextureMessage class]]) {
     [self writeByte:136];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[FLTVolumeMessage class]]) {
+    [self writeByte:137];
     [self writeValue:[value toMap]];
   } else 
 {
@@ -651,6 +683,26 @@ void FLTAVFoundationVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMesseng
         FLTPictureInPictureMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
         FlutterError *error;
         [api setPictureInPicture:arg_msg error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.AVFoundationVideoPlayerApi.setAirPlay"
+        binaryMessenger:binaryMessenger
+        codec:FLTAVFoundationVideoPlayerApiGetCodec()        ];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setAirPlay:error:)], @"FLTAVFoundationVideoPlayerApi api (%@) doesn't respond to @selector(setAirPlay:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        FLTAirPlayMessage *arg_msg = GetNullableObjectAtIndex(args, 0);
+        FlutterError *error;
+        [api setAirPlay:arg_msg error:&error];
         callback(wrapResult(nil, error));
       }];
     }

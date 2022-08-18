@@ -25,6 +25,7 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   MixWithOthersMessage? mixWithOthersMessage;
   PreparePictureInPictureMessage? preparePictureInPictureMessage;
   PictureInPictureMessage? pictureInPictureMessage;
+  AirPlayMessage? airPlayMessage;
 
   @override
   TextureMessage create(CreateMessage arg) {
@@ -109,6 +110,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
   void setPictureInPicture(PictureInPictureMessage msg) {
     log.add('setPictureInPicture');
     pictureInPictureMessage = msg;
+  }
+
+  @override
+  void setAirPlay(AirPlayMessage arg) {
+    log.add('setAirPlay');
+    airPlayMessage = arg;
   }
 }
 

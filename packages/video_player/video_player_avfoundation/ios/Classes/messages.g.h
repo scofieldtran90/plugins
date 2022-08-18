@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class FLTCreateMessage;
 @class FLTMixWithOthersMessage;
 @class FLTPictureInPictureMessage;
+@class FLTAirPlayMessage;
 @class FLTPreparePictureInPictureMessage;
 
 @interface FLTTextureMessage : NSObject
@@ -95,6 +96,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSNumber * enabled;
 @end
 
+@interface FLTAirPlayMessage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithTextureId:(NSNumber *)textureId
+    enabled:(NSNumber *)enabled;
+@property(nonatomic, strong) NSNumber * textureId;
+@property(nonatomic, strong) NSNumber * enabled;
+@end
+
 @interface FLTPreparePictureInPictureMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
@@ -131,6 +141,7 @@ NSObject<FlutterMessageCodec> *FLTAVFoundationVideoPlayerApiGetCodec(void);
 - (nullable NSNumber *)isPictureInPictureSupported:(FlutterError *_Nullable *_Nonnull)error;
 - (void)preparePictureInPicture:(FLTPreparePictureInPictureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 - (void)setPictureInPicture:(FLTPictureInPictureMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setAirPlay:(FLTAirPlayMessage *)msg error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void FLTAVFoundationVideoPlayerApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLTAVFoundationVideoPlayerApi> *_Nullable api);
